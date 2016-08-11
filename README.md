@@ -7,7 +7,7 @@ import FooBar from 'app/directory/FooBar';
 const instance = new FooBar();
 instance.init();
 ```
-...into something like this:
+...to something like this:
 ``` javascript
 class FooBar {
   constructor() {
