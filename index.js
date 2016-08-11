@@ -81,5 +81,5 @@ module.exports = function(source, map) {
   } catch (e) {
     throw new Error(e);
   }
-  this.callback(null, loader.bloat();, map);
+  this.callback(null, result, map);
 };
