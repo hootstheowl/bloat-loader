@@ -1,7 +1,7 @@
 {
   "name": "bloat-loader",
   "version": "1.0.0",
-  "description": "Bloat loader for webpack",
+  "description": "Require() and import injection loader for Webpack",
   "main": "index.js",
   "keywords": [
     "bloat",
