@@ -1,0 +1,24 @@
+{
+  "name": "bloat-loader",
+  "version": "1.0.0",
+  "description": "Bloat loader for webpack",
+  "main": "index.js",
+  "keywords": [
+    "bloat",
+    "webpack",
+    "loader"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hootstheowl/bloat-loader.git"
+  },
+  "author": "Shawn Scofield",
+  "license": "MIT",
+  "dependencies": {
+    "loader-utils": "~0.2.6"
+  },
+  "bugs": {
+    "url": "https://github.com/hootstheowl/bloat-loader/issues"
+  },
+  "homepage": "https://github.com/hootstheowl/bloat-loader#readme"
+}
