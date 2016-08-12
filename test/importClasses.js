@@ -1,9 +1,10 @@
-var assert = require('assert');
-var bloatLoader = require('../index.js');
+const assert = require('assert');
+const bloatLoader = require('../index.js');
+const testSection = 'Classes';
 
-describe('importDefaultClass', function() {
-  var bloatedSource;
-  var source = `(()=>{
+describe(`${testSection}: Import default Class`, function() {
+  let bloatedSource;
+  const source = `(()=>{
     import DefaultClass from 'files/import/classes';
     var defaultClass = new DefaultClass();
     return defaultClass.init();
@@ -24,9 +25,9 @@ describe('importDefaultClass', function() {
   });
 });
 
-describe('importClasses', function() {
-  var bloatedSource;
-  var source = `(() => {
+describe(`${testSection}: Import Classes`, function() {
+  let bloatedSource;
+  const source = `(() => {
     import { ClassOne, ClassTwo, ClassThree } from 'files/import/classes';
     var classOne = new ClassOne();
     var classTwo = new ClassTwo();

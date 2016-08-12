@@ -1,9 +1,10 @@
-var assert = require('assert');
-var bloatLoader = require('../index.js');
+const assert = require('assert');
+const bloatLoader = require('../index.js');
+const testSection = 'Variable Functions';
 
-describe('importDefaultVariableFunction', function() {
-  var bloatedSource;
-  var source = `(()=>{
+describe(`${testSection}: Import default Function`, function() {
+  let bloatedSource;
+  const source = `(()=>{
     import defaultFunction from 'files/import/variableFunctions';
     return defaultFunction();
   })()`;
@@ -23,9 +24,9 @@ describe('importDefaultVariableFunction', function() {
   });
 });
 
-describe('importVariableFunctions', function() {
-  var bloatedSource;
-  var source = `(() => {
+describe(`${testSection}: Import Functions`, function() {
+  let bloatedSource;
+  const source = `(() => {
     import { functionOne, functionTwo, functionThree } from 'files/import/variableFunctions';
     return [ functionOne(), functionTwo(), functionThree() ];
   })()`;

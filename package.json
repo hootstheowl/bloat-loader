@@ -1,6 +1,6 @@
 {
   "name": "bloat-loader",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "import source injection loader for Webpack",
   "author": "Shawn Scofield",
   "license": "MIT",

@@ -1,9 +1,10 @@
-var assert = require('assert');
-var bloatLoader = require('../index.js');
+const assert = require('assert');
+const bloatLoader = require('../index.js');
+const testSection = 'Arrow Functions';
 
-describe('importDefaultArrowFunction', function() {
-  var bloatedSource;
-  var source = `(()=>{
+describe(`${testSection}: Import default Function`, function() {
+  let bloatedSource;
+  const source = `(()=>{
     import defaultFunction from 'files/import/arrowFunctions';
     return defaultFunction();
   })()`;
@@ -23,9 +24,9 @@ describe('importDefaultArrowFunction', function() {
   });
 });
 
-describe('importArrowFunctions', function() {
-  var bloatedSource;
-  var source = `(() => {
+describe(`${testSection}: Import Functions`, function() {
+  let bloatedSource;
+  const source = `(() => {
     import { functionOne, functionTwo, functionThree } from 'files/import/arrowFunctions';
     return [ functionOne(), functionTwo(), functionThree() ];
   })()`;

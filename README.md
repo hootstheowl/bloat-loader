@@ -26,6 +26,9 @@ instance.init();
 
 `npm install bloat-loader --save-dev`
 
+## Requirements
+bloat-loader uses ES2015+ features and requires Node 4.4.5+
+
 ## Usage
 
 ### Intended Usage
@@ -52,4 +55,9 @@ When using [Babel](https://babeljs.io/) or another transpiler, bloat-loader must
 ...
         loaders: ['babel', 'bloat-loader'],
 ...
-``` 
+```
+
+## Currently Supported Syntax (v0.2.0):
+
+* `import defaultModule from 'app/modules/module'`
+* `import { moduleOne, moduleTwo, moduleThree } from 'app/modules/module'`
