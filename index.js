@@ -3,34 +3,29 @@
 var fs = require('fs');
 var loaderUtils = require('loader-utils');
 
-function BloatLoader(filename, source) {
-  this.filename = filename;
-  this.source = source;
-  this.matchRules = [
+function bloat(filename, source) {
+  var result = source;
+  var matchRules = [
     // import something from 'my/directory'
-    /^import\s[\s{]*(\w[,\s\w]*)[\s}]*\sfrom\s+['"](.*)['"].*/gm,
+    /^\s*import\s[\s{]*(\w[,\s\w]*)[\s}]*\sfrom\s+['"](.*)['"].*/gm,
     // import 'my/directory'
-    /^import\s['"](.*)['"].*/gm,
+    /^\s*import\s['"](.*)['"].*/gm,
     // var something = require('my/directory')
-    /^(?:var|let|const)\s+(\w+)\s*=\s*require\(['"](.*)['"]\).*/gm,
+    /^\s*(?:var|let|const)\s+(\w+)\s*=\s*require\(['"](.*)['"]\).*/gm,
     // require('my/directory')
-    /^require\(['"](.*)['"]\).*/gm,
+    /^\s*require\(['"](.*)['"]\).*/gm,
   ];
-};
-
-BloatLoader.prototype.init = function() {
-  var result = this.source;
-  for (var i = 0; i < this.matchRules.length; i++) {
-    var regexp = this.matchRules[i];
-    var matches = this.getMatches(this.source, regexp);
+  for (var i = 0; i < matchRules.length; i++) {
+    var regexp = matchRules[i];
+    var matches = getMatches(source, regexp);
     if (matches.length > 0) {
-      result = this.bloatMatches(result, matches);
+      result = bloatMatches(filename, result, matches);
     }
   }
   return result;
 };
 
-BloatLoader.prototype.getMatches = function(source, regexp) {
+function getMatches(source, regexp) {
   var matches = [];
   var match;
   while ((match = regexp.exec(source)) !== null) {
@@ -39,47 +34,68 @@ BloatLoader.prototype.getMatches = function(source, regexp) {
   return matches;
 };
 
-BloatLoader.prototype.bloatMatches = function(source, matches) {
+function bloatMatches(filename, source, matches) {
   var nextSource = source;
   for (var i = 0; i < matches.length; i++) {
     var match = matches[i];
-    var matchFile = this.getRelativeFilename(
-      this.filename, match[2]
+    var matchFile = getRelativeFilename(
+      filename, match[2]
     );
+    var moduleNames = match[1].split(',');
+    var sources = [];
     var file = fs.readFileSync(matchFile, 'utf8');
-    if (!file) {
-      continue;
+    file = file.replace(/^export\s+(?:default)*/gm, '');
+    for (var i = 0; i < moduleNames.length; i++) {
+      var module = eval(`(function(){
+        ${file}
+        return ${moduleNames[i]};
+      }())`);
+      var moduleSource = module.toString();
+      if (moduleSource.match(
+        /^(?:var|let|const|class|function)\s+[^\(]/
+      ) === null) {
+        moduleSource = `var ${moduleNames[i]} = ${moduleSource}`;
+      }
+      sources.push(moduleSource.toString());
     }
-    nextSource = nextSource.replace(match[0], file);
+    nextSource = nextSource.replace(match[0], sources.join('\n'));
   }
   return nextSource;
 };
 
-BloatLoader.prototype.getRelativeFilename = function(
-  sourceFilename, relativeFilename
-) {
-  var lowerDirectories = relativeFilename.match(/^(\.\.\/)/);
+function getRelativeFilename(sourceFilename, relativeFilename) {
   var newFilename = sourceFilename;
-  for (var i = 0; i < lowerDirectories.length; i++) {
-    if (lowerDirectories[i] === '') {
-      continue;
+  var lowerDirectories = relativeFilename.match(/^(\.\.\/)/);
+  if (lowerDirectories !== null) {
+    for (var i = 0; i < lowerDirectories.length; i++) {
+      if (lowerDirectories[i] === '') {
+        continue;
+      }
+      newFilename = newFilename.replace(/(\/[^/]+)$/, '');
     }
+  } else {
     newFilename = newFilename.replace(/(\/[^/]+)$/, '');
   }
   return newFilename+'/'+relativeFilename.replace(/^(\.\.\/)+/, '')+'.js';
 };
 
-module.exports = function(source, map) {
+module.exports = function(source, map, filename, testing) {
+  if (testing === true) {
+    return bloat(filename, source);
+  }
   this.cacheable && this.cacheable();
   var result = '';
   var callback = this.async();
   var webpackRemainingChain = loaderUtils.getRemainingRequest(this).split('!');
   var filename = webpackRemainingChain[webpackRemainingChain.length - 1];
-  var loader = new BloatLoader(filename, source);
   try {
-    result = loader.init();
+    result = bloat(filename, source);
   } catch (e) {
     throw new Error(e);
   }
-  this.callback(null, result, map);
+  if (this.async) {
+    this.callback(null, result, map)
+  } else {
+    return result;
+  }
 };

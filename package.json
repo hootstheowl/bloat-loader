@@ -1,24 +1,33 @@
 {
   "name": "bloat-loader",
-  "version": "1.0.0",
-  "description": "Require() and import injection loader for Webpack",
+  "version": "0.2.0",
+  "description": "import source injection loader for Webpack",
+  "author": "Shawn Scofield",
+  "license": "MIT",
   "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hootstheowl/bloat-loader.git"
+  },
   "keywords": [
     "bloat",
     "webpack",
     "loader"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/hootstheowl/bloat-loader.git"
-  },
-  "author": "Shawn Scofield",
-  "license": "MIT",
-  "dependencies": {
-    "loader-utils": "~0.2.6"
-  },
   "bugs": {
     "url": "https://github.com/hootstheowl/bloat-loader/issues"
   },
-  "homepage": "https://github.com/hootstheowl/bloat-loader#readme"
+  "homepage": "https://github.com/hootstheowl/bloat-loader#readme",
+  "dependencies": {
+    "loader-utils": "~0.2.6"
+  },
+  "devDependencies": {
+    "mocha": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=4.4.5"
+  }
 }
