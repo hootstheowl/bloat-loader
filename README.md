@@ -22,7 +22,7 @@ const instance = new FooBar();
 instance.init();
 ```
 
-## Currently Supported Syntax (v0.2.0):
+## Currently Supported Syntax (v0.3.0):
 
 Directly import the default:
 
@@ -35,6 +35,14 @@ Import a single member of a module:
 Import multiple members of a module:
 
 `import { foo, bar } from 'my-module'`
+
+Import a member with a more convenient alias:
+
+`import { reallyReallyLongModuleMemberName as shortName } from 'my-module'`
+
+Import multiple members of a module with aliases:
+
+`import { reallyReallyLongModuleMemberName as shortName, anotherLongModuleName as short } from 'my-module'`
 
 See the [bloat-loader feature roadmap](https://github.com/hootstheowl/bloat-loader/wiki/Feature-Roadmap) for more information on upcoming syntax support.
 

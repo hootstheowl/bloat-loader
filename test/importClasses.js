@@ -49,3 +49,28 @@ describe(`${testSection}: Import Classes`, function() {
     );
   });
 });
+
+describe(`${testSection}: Import aliased Classes`, function() {
+  let bloatedSource;
+  const source = `(() => {
+    import { ClassOne as One, ClassTwo as Two, ClassThree as Three } from 'files/import/classes';
+    var classOne = new One();
+    var classTwo = new Two();
+    var classThree = new Three();
+    return [ classOne.init(), classTwo.init(), classThree.init() ];
+  })()`;
+  it('should not throw an exception', function(){
+    assert.doesNotThrow(
+      function() {
+        bloatedSource = bloatLoader(
+          source, null, __filename, true
+        )
+      }, Error
+    );
+  });
+  it('should evaluate to [ 1, 2, 3 ]', function() {
+    assert.deepStrictEqual(
+      eval(bloatedSource), [1,2,3]
+    );
+  });
+});

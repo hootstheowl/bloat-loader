@@ -45,3 +45,25 @@ describe(`${testSection}: Import Functions`, function() {
     );
   });
 });
+
+describe(`${testSection}: Import aliased Functions`, function() {
+  let bloatedSource;
+  const source = `(() => {
+    import { functionOne as one, functionTwo as two, functionThree as three } from 'files/import/variableFunctions';
+    return [ one(), two(), three() ];
+  })()`;
+  it('should not throw an exception', function(){
+    assert.doesNotThrow(
+      function() {
+        bloatedSource = bloatLoader(
+          source, null, __filename, true
+        )
+      }, Error
+    );
+  });
+  it('should evaluate to [ 1, 2, 3 ]', function() {
+    assert.deepStrictEqual(
+      eval(bloatedSource), [1,2,3]
+    );
+  });
+});
