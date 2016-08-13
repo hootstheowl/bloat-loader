@@ -1,6 +1,6 @@
 # Bloat loader for [webpack](http://webpack.github.io/)
 
-bloat-loader is a webpack loader that will replace all require() and import declarations with the requested file's source code. Effectively, bloating your code from this:
+bloat-loader is a webpack loader that will replace all import declarations with the requested file's source code. Effectively, bloating your code from this:
 ``` javascript
 import FooBar from 'app/directory/FooBar';
 
@@ -24,15 +24,28 @@ instance.init();
 
 ## Currently Supported Syntax (v0.2.0):
 
-* `import defaultModule from 'app/modules/module'`
-* `import { moduleOne, moduleTwo, moduleThree } from 'app/modules/module'`
+Directly import the default:
 
-## Requirements
-bloat-loader uses ES2015+ features and **requires Node 4.4.5+**
+`import myDefault from 'my-module'`
+
+Import a single member of a module:
+
+`import { myMember } from 'my-module'`
+
+Import multiple members of a module:
+
+`import { foo, bar } from 'my-module'`
+
+See the [bloat-loader feature roadmap](https://github.com/hootstheowl/bloat-loader/wiki/Feature-Roadmap) for more information on upcoming syntax support.
 
 ## Install
 
+### Via npm install
+
 `npm install bloat-loader --save-dev`
+
+### Requirements
+bloat-loader uses ES2015+ features and **requires Node 4.4.5 or above**
 
 ## Usage
 
