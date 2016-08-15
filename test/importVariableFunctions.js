@@ -46,11 +46,11 @@ describe(`${testSection}: Import Functions`, function() {
   });
 });
 
-describe(`${testSection}: Import aliased Functions`, function() {
+describe(`${testSection}: Import all aliased Functions`, function() {
   let bloatedSource;
   const source = `(() => {
-    import { functionOne as one, functionTwo as two, functionThree as three } from 'files/import/variableFunctions';
-    return [ one(), two(), three() ];
+    import * as functions from 'files/import/variableFunctions';
+    return [ functions.functionOne(), functions.functionTwo(), functions.functionThree() ];
   })()`;
   it('should not throw an exception', function(){
     assert.doesNotThrow(

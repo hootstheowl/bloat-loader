@@ -43,21 +43,21 @@ function bloatMatches(filename, source, matches) {
     );
     const moduleNames = match[1].split(',');
     const sources = [];
-    let matchFileSource = fs.readFileSync(matchFile, 'utf8');
-        matchFileSource = matchFileSource.replace(
-          /^export\s+(?:default)*/gm, ''
-        );
+    const matchFileSource = fs.readFileSync(matchFile, 'utf8');
+    const shavedFileSource = matchFileSource.replace(
+      /^export\s+(?:default)*/gm, ''
+    );
     for (let i = 0; i < moduleNames.length; i++) {
       let moduleSource;
       const moduleName = moduleNames[i];
       if (moduleName.match(/\s+as\s+/) !== null) {
         moduleSource = getAliasedSource(
-          moduleName, matchFileSource
+          moduleName, matchFileSource, shavedFileSource
         );
       } else {
         moduleSource = prependVariable(
           moduleName, getModuleSource(
-            moduleName, matchFileSource
+            moduleName, shavedFileSource
           )
         );
       }
@@ -68,23 +68,69 @@ function bloatMatches(filename, source, matches) {
   return nextSource;
 };
 
-function getAliasedSource(moduleName, fileSource) {
+function getAliasedSource(moduleName, fileSource, shavedFileSource) {
+  let moduleSource;
   const names = moduleName.split(/\s+as\s+/);
   const name = names[0].replace(/\s/, '');
   const alias = names[1].replace(/\s/, '');
-  let moduleSource = getModuleSource(name, fileSource);
-  return prependVariable(
-    alias, moduleSource.replace(name, alias)
+  if (name.match(/\s*\*\s*/)) {
+    moduleSource = getAllModuleSources(
+      fileSource, shavedFileSource
+    );
+    return attachAliasToModules(
+      alias, moduleSource
+    );
+  } else {
+    moduleSource = getModuleSource(
+      name, shavedFileSource
+    ).replace(name, alias);
+    return prependVariable(
+      alias, moduleSource.replace(name, alias)
+    );
+  }
+};
+
+function getAllModuleSources(fileSource, shavedFileSource) {
+  const moduleNames = findAllModuleNames(fileSource);
+  const modules = {};
+  for (var i = 0; i < moduleNames.length; i++) {
+    const moduleName = moduleNames[i];
+    const module = eval(`(function() {
+      ${shavedFileSource}
+      return ${moduleName};
+    }());`);
+    modules[moduleName] = module.toString();
+  }
+  return modules;
+};
+
+function attachAliasToModules(alias, moduleSources) {
+  let source = `const ${alias} = {};\n`;
+  for (let moduleName in moduleSources) {
+    source += `${alias}.${moduleName} = ${moduleSources[moduleName]};\n`;
+  }
+  return source;
+};
+
+function findAllModuleNames(fileSource) {
+  const result = [];
+  const matches = getMatches(
+    fileSource,
+    /^export\s*(?:default)*\s*(?:const|let|var|function|class)\s+(\w+)/gm
   );
-}
+  for (let i = 0; i < matches.length; i++) {
+    result.push(matches[i][1]);
+  }
+  return result;
+};
 
 function getModuleSource(moduleName, fileSource) {
-  const module = eval(`(function(){
+  const module = eval(`(function() {
     ${fileSource}
     return ${moduleName};
   }())`);
   return module.toString();
-}
+};
 
 function prependVariable(moduleName, moduleSource) {
   if (moduleSource.match(
@@ -93,7 +139,7 @@ function prependVariable(moduleName, moduleSource) {
     moduleSource = `var ${moduleName} = ${moduleSource}`;
   }
   return moduleSource;
-}
+};
 
 function getRelativeFilename(sourceFilename, relativeFilename) {
   let newFilename = sourceFilename;
@@ -123,7 +169,6 @@ module.exports = function(source, map, filename, testing) {
   try {
     result = bloat(sourceFilename, source);
   } catch (e) {
-    console.log(e);
     throw new Error(e);
   }
   if (this.async) {
